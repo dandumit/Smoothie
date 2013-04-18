@@ -53,11 +53,11 @@ void Robot::on_module_loaded() {
 }
 
 void Robot::on_config_reload(void* argument){
-    
+
     // Arm solutions are used to convert positions in millimeters into position in steps for each stepper motor.
     // While for a cartesian arm solution, this is a simple multiplication, in other, less simple cases, there is some serious math to be done.
     // To make adding those solution easier, they have their own, separate object.
-    // Here we read the config to find out which arm solution to use 
+    // Here we read the config to find out which arm solution to use
     if (this->arm_solution) delete this->arm_solution;
     int solution_checksum = get_checksum(this->kernel->config->value(arm_solution_checksum)->by_default("cartesian")->as_string());
     // Note checksums are not const expressions when in debug mode, so don't use switch
@@ -185,8 +185,13 @@ void Robot::on_gcode_received(void * argument){
 
     memcpy(target, this->current_position, sizeof(target));    //default to last target
 
-    for(char letter = 'I'; letter <= 'K'; letter++){ if( gcode->has_letter(letter) ){ offset[letter-'I'] = this->to_millimeters(gcode->get_value(letter));                                                    } }
-    for(char letter = 'X'; letter <= 'Z'; letter++){ if( gcode->has_letter(letter) ){ target[letter-'X'] = this->to_millimeters(gcode->get_value(letter)) + ( this->absolute_mode ? 0 : target[letter-'X']);  } }
+    for (char letter = 'I'; letter <= 'K'; letter++)
+        if ( gcode->has_letter(letter) )
+            offset[letter-'I'] = this->to_millimeters(gcode->get_value(letter));
+
+    for (char letter = 'X'; letter <= 'Z'; letter++)
+        if ( gcode->has_letter(letter) )
+            target[letter-'X'] = this->to_millimeters(gcode->get_value(letter)) + ( this->absolute_mode ? 0 : target[letter-'X']);
 
     if( gcode->has_letter('F') )
     {
@@ -212,26 +217,21 @@ void Robot::on_gcode_received(void * argument){
     // motion control system might still be processing the action and the real tool position
     // in any intermediate location.
     memcpy(this->current_position, target, sizeof(double)*3); // this->position[] = target[];
-
-
-
-
 }
 
-// We received a new gcode, and one of the functions 
-// determined the distance for that given gcode. So now we can attach this gcode to the right block
-// and continue
-void Robot::distance_in_gcode_is_known(Gcode* gcode){
-
-    //If the queue is empty, execute immediatly, otherwise attach to the last added block
-    if( this->kernel->conveyor->queue.size() == 0 ){
-        this->kernel->call_event(ON_GCODE_EXECUTE, gcode );
-    }else{
-        Block* block = this->kernel->conveyor->queue.get_ref( this->kernel->conveyor->queue.size() - 1 );
-        block->append_gcode(gcode);
-    }
-
-}
+// // We received a new gcode, and one of the functions
+// // determined the distance for that given gcode. So now we can attach this gcode to the right block
+// // and continue
+// void Robot::distance_in_gcode_is_known(Gcode* gcode){
+//
+//     //If the queue is empty, execute immediatly, otherwise attach to the last added block
+//     if( this->kernel->conveyor->queue.size() == 0 ){
+//         this->kernel->call_event(ON_GCODE_EXECUTE, gcode );
+//     }else{
+//         Block* block = this->kernel->conveyor->queue.get_ref( this->kernel->conveyor->queue.size() - 1 );
+//         block->append_gcode(gcode);
+//     }
+// }
 
 // Reset the position for all axes ( used in homing and G92 stuff )
 void Robot::reset_axis_position(double position, int axis) {
@@ -248,18 +248,21 @@ void Robot::append_milestone( double target[], double rate ){
     this->arm_solution->millimeters_to_steps( target, steps );
 
     double deltas[3];
-    for(int axis=X_AXIS;axis<=Z_AXIS;axis++){deltas[axis]=target[axis]-this->last_milestone[axis];}
+
+    for (int axis=X_AXIS;axis<=Z_AXIS;axis++)
+        deltas[axis] = target[axis] - this->last_milestone[axis];
 
     // Compute how long this move moves, so we can attach it to the block for later use
-    double millimeters_of_travel = sqrt( pow( deltas[X_AXIS], 2 ) +  pow( deltas[Y_AXIS], 2 ) +  pow( deltas[Z_AXIS], 2 ) );
+    double millimeters_of_travel = hypotf(hypotf(deltas[X_AXIS], deltas[Y_AXIS]), deltas[Z_AXIS]);
 
     // Do not move faster than the configured limits
-    for(int axis=X_AXIS;axis<=Z_AXIS;axis++){
-        if( this->max_speeds[axis] > 0 ){
+    for (int axis=X_AXIS;axis<=Z_AXIS;axis++)
+    {
+        if ( this->max_speeds[axis] > 0 )
+        {
             double axis_speed = ( fabs(deltas[axis]) / ( millimeters_of_travel / rate )) * seconds_per_minute;
-            if( axis_speed > this->max_speeds[axis] ){
-                rate = rate * ( this->max_speeds[axis] / axis_speed );
-            }
+            if ( axis_speed > this->max_speeds[axis] )
+                rate = rate * this->max_speeds[axis] / axis_speed;
         }
     }
 
@@ -268,7 +271,6 @@ void Robot::append_milestone( double target[], double rate ){
 
     // Update the last_milestone to the current target for the next time we use last_milestone
     memcpy(this->last_milestone, target, sizeof(double)*3); // this->last_milestone[] = target[];
-
 }
 
 // Append a move to the queue ( cutting it into segments if needed )
@@ -281,13 +283,13 @@ void Robot::append_line(Gcode* gcode, double target[], double rate ){
     if( gcode->millimeters_of_travel < 0.0001 ){ return; }
 
     // Mark the gcode as having a known distance
-    this->distance_in_gcode_is_known( gcode );
+//     this->distance_in_gcode_is_known( gcode );
 
     // We cut the line into smaller segments. This is not usefull in a cartesian robot, but necessary for robots with rotational axes.
     // In cartesian robot, a high "mm_per_line_segment" setting will prevent waste.
     // In delta robots either mm_per_line_segment can be used OR delta_segments_per_second The latter is more efficient and avoids splitting fast long lines into very small segments, like initial z move to 0, it is what Johanns Marlin delta port does
     uint16_t segments;
-    
+
     if(this->delta_segments_per_second > 1.0) {
         // enabled if set to something > 1, it is set to 0.0 by default
         // segment based on current speed and requested segments per second
@@ -296,7 +298,7 @@ void Robot::append_line(Gcode* gcode, double target[], double rate ){
         float seconds = 60.0/seconds_per_minute * gcode->millimeters_of_travel / rate;
         segments= max(1, ceil(this->delta_segments_per_second * seconds));
         // TODO if we are only moving in Z on a delta we don't really need to segment at all
-        
+
     }else{
         if(this->mm_per_line_segment == 0.0){
             segments= 1; // don't split it up
@@ -304,7 +306,7 @@ void Robot::append_line(Gcode* gcode, double target[], double rate ){
             segments = ceil( gcode->millimeters_of_travel/ this->mm_per_line_segment);
         }
     }
-    
+
     // A vector to keep track of the endpoint of each segment
     double temp_target[3];
     //Initialize axes
@@ -313,11 +315,11 @@ void Robot::append_line(Gcode* gcode, double target[], double rate ){
     //For each segment
     for( int i=0; i<segments-1; i++ ){
         for(int axis=X_AXIS; axis <= Z_AXIS; axis++ ){ temp_target[axis] += ( target[axis]-this->current_position[axis] )/segments; }
-        // Append the end of this segment to the queue 
+        // Append the end of this segment to the queue
         this->append_milestone(temp_target, rate);
     }
-    
-    // Append the end of this full move to the queue 
+
+    // Append the end of this full move to the queue
     this->append_milestone(target, rate);
 }
 
@@ -347,8 +349,8 @@ void Robot::append_arc(Gcode* gcode, double target[], double offset[], double ra
 
     // Mark the gcode as having a known distance
     this->distance_in_gcode_is_known( gcode );
-   
-    // Figure out how many segments for this gcode 
+
+    // Figure out how many segments for this gcode
     uint16_t segments = floor(gcode->millimeters_of_travel/this->mm_per_arc_segment);
 
     double theta_per_segment = angular_travel/segments;

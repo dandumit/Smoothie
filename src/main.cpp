@@ -42,8 +42,8 @@
 // Watchdog wd(5000000, WDT_MRI);
 
 // USB Stuff
-SDCard sd(P0_9, P0_8, P0_7, P0_6);      // this selects SPI1 as the sdcard as it is on Smoothieboard
-//SDCard sd(P0_18, P0_17, P0_15, P0_16);  // this selects SPI0 as the sdcard
+//SDCard sd(P0_9, P0_8, P0_7, P0_6);      // this selects SPI1 as the sdcard as it is on Smoothieboard
+SDCard sd(P0_18, P0_17, P0_15, P0_16);  // this selects SPI0 as the sdcard
 
 USB u;
 USBSerial usbserial(&u);
@@ -55,11 +55,11 @@ SDFAT mounter("sd", &sd);
 char buf[512];
 
 GPIO leds[5] = {
-    GPIO(P1_18),
-    GPIO(P1_19),
-    GPIO(P1_20),
-    GPIO(P1_21),
-    GPIO(P4_28)
+    GPIO(P0_6),
+    GPIO(P0_7),
+    GPIO(P0_8),
+    GPIO(P0_9),
+    GPIO(P1_16)
 };
 
 int main() {

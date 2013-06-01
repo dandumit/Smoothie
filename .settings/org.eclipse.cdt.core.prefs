@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+environment/project/org.eclipse.cdt.cross.arm.gnu.sourcery.windows.toolchain.base.1736594887.1434114183/PATH/delimiter=;
+environment/project/org.eclipse.cdt.cross.arm.gnu.sourcery.windows.toolchain.base.1736594887.1434114183/PATH/operation=replace
+environment/project/org.eclipse.cdt.cross.arm.gnu.sourcery.windows.toolchain.base.1736594887.1434114183/PATH/value=C\:/Program Files/Java/jre7/bin/client;C\:/Program Files/Java/jre7/bin;C\:/Program Files/Java/jre7/lib/i386;C\:\\Windows\\system32;C\:\\Windows;C\:\\Windows\\System32\\Wbem;C\:\\Windows\\System32\\WindowsPowerShell\\v1.0\\;C\:\\Program Files\\SlikSvn\\bin;C\:\\Program Files\\Bazaar;C\:\\Program Files\\CMake 2.8\\bin;C\:\\Program Files\\Pico Technology\\PicoScope6\\;C\:\\Program Files\\Flash Magic;C\:\\Dwimperl\\perl\\bin;C\:\\Dwimperl\\perl\\site\\bin;C\:\\Dwimperl\\c\\bin;;D\:\\eclipse;${ProjDirPath}\\gcc-arm-none-eabi\\bin
+environment/project/org.eclipse.cdt.cross.arm.gnu.sourcery.windows.toolchain.base.1736594887.1434114183/append=true
+environment/project/org.eclipse.cdt.cross.arm.gnu.sourcery.windows.toolchain.base.1736594887.1434114183/appendContributed=true

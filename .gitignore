@@ -21,3 +21,8 @@ debug
 /mac_install.log
 /win_install.log
 /linux_install.log
+/build
+.settings
+.gitignore
+.cproject
+.project

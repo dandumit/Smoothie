@@ -23,6 +23,7 @@
 #include "libs/Config.h"
 #include "libs/nuts_bolts.h"
 #include "libs/utils.h"
+#include "modules/tools/SimpleKeyboard/SimpleKeyboard.h"
 
 // Debug
 #include "libs/SerialMessage.h"
@@ -42,8 +43,8 @@
 // Watchdog wd(5000000, WDT_MRI);
 
 // USB Stuff
-SDCard sd(P0_9, P0_8, P0_7, P0_6);      // this selects SPI1 as the sdcard as it is on Smoothieboard
-//SDCard sd(P0_18, P0_17, P0_15, P0_16);  // this selects SPI0 as the sdcard
+//SDCard sd(P0_9, P0_8, P0_7, P0_6);      // this selects SPI1 as the sdcard as it is on Smoothieboard
+SDCard sd(P0_18, P0_17, P0_15, P0_16);  // this selects SPI0 as the sdcard
 
 USB u;
 USBSerial usbserial(&u);
@@ -89,6 +90,7 @@ int main() {
     kernel->add_module( new Endstops() );
     kernel->add_module( new Player() );
     kernel->add_module( new Touchprobe() );
+    kernel->add_module( new SimpleKeyboard() );
 
     // Create and initialize USB stuff
     u.init();

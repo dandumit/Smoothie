@@ -19,6 +19,9 @@
 #include "modules/utils/player/Player.h"
 #include "modules/utils/pausebutton/PauseButton.h"
 #include "modules/utils/PlayLed/PlayLed.h"
+
+#include "modules/tools/SimpleKeyboard/SimpleKeyboard.h"
+
 // #include "libs/ChaNFSSD/SDFileSystem.h"
 #include "libs/Config.h"
 #include "libs/nuts_bolts.h"
@@ -83,12 +86,13 @@ int main() {
     kernel->add_module( new Configurator() );
     kernel->add_module( new CurrentControl() );
     kernel->add_module( new TemperatureControlPool() );
-    kernel->add_module( new SwitchPool() );
-    kernel->add_module( new ButtonPool() );
-    kernel->add_module( new PauseButton() );
+//    kernel->add_module( new SwitchPool() );
+//    kernel->add_module( new ButtonPool() );
+//    kernel->add_module( new PauseButton() );
     kernel->add_module( new PlayLed() );
     kernel->add_module( new Endstops() );
     kernel->add_module( new Player() );
+    kernel->add_module( new SimpleKeyboard() );
 
     // Create and initialize USB stuff
     u.init();

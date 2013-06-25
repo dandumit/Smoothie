@@ -15,6 +15,7 @@
 #include "libs/Pin.h"
 #include "libs/Median.h"
 #include "modules/robot/Conveyor.h"
+#include "PublicDataRequest.h"
 
 #include "MRI_Hooks.h"
 
@@ -37,12 +38,13 @@ void TemperatureControl::on_module_loaded(){
     this->register_for_event(ON_GCODE_RECEIVED);
     this->register_for_event(ON_MAIN_LOOP);
     this->register_for_event(ON_SECOND_TICK);
-
+    this->register_for_event(ON_GET_PUBLIC_DATA);
+    this->register_for_event(ON_SET_PUBLIC_DATA);
 }
 
 void TemperatureControl::on_main_loop(void* argument){
     if (this->min_temp_violated) {
-        kernel->streams->printf("MINTEMP triggered on P%d.%d! check your thermistors!\n", this->thermistor_pin.port_number, this->thermistor_pin.pin);
+        kernel->streams->printf("Error: MINTEMP triggered on P%d.%d! check your thermistors!\n", this->thermistor_pin.port_number, this->thermistor_pin.pin);
         this->min_temp_violated = false;
     }
 }
@@ -71,7 +73,8 @@ void TemperatureControl::on_config_reload(void* argument){
     }else if( thermistor->value.compare("RRRF100K"     ) == 0 ){ this->beta = 3960;
     }else if( thermistor->value.compare("RRRF10K"      ) == 0 ){ this->beta = 3964; this->r0 = 10000; this->r1 = 680; this->r2 = 1600;
     }else if( thermistor->value.compare("Honeywell100K") == 0 ){ this->beta = 3974;
-    }else if( thermistor->value.compare("Semitec"      ) == 0 ){ this->beta = 4267; }
+    }else if( thermistor->value.compare("Semitec"      ) == 0 ){ this->beta = 4267; 
+    }else if( thermistor->value.compare("HT100K"       ) == 0 ){ this->beta = 3990; }
 
     // Preset values are overriden by specified values
     this->r0 =                  this->kernel->config->value(temperature_control_checksum, this->name_checksum, r0_checksum  )->by_default(this->r0  )->as_number();               // Stated resistance eg. 100K
@@ -123,8 +126,9 @@ void TemperatureControl::on_gcode_received(void* argument){
     {
         // Get temperature
         if( gcode->m == this->get_m_code ){
-            gcode->stream->printf("%s:%3.1f /%3.1f @%d ", this->designator.c_str(), this->get_temperature(), ((target_temperature == UNDEFINED)?0.0:target_temperature), this->o);
-            gcode->add_nl = true;
+            char buf[32]; // should be big enough for any status
+            int n= snprintf(buf, sizeof(buf), "%s:%3.1f /%3.1f @%d ", this->designator.c_str(), this->get_temperature(), ((target_temperature == UNDEFINED)?0.0:target_temperature), this->o);
+            gcode->txt_after_ok.append(buf, n);
         }
         if (gcode->m == 301)
         {
@@ -199,6 +203,38 @@ void TemperatureControl::on_gcode_execute(void* argument){
     }
 }
 
+void TemperatureControl::on_get_public_data(void* argument){
+    PublicDataRequest* pdr = static_cast<PublicDataRequest*>(argument);
+    
+    if(!pdr->starts_with(temperature_control_checksum)) return;
+
+    if(!pdr->second_element_is(this->name_checksum)) return; // will be bed or hotend
+
+    // ok this is targeted at us, so send back the requested data
+    if(pdr->third_element_is(current_temperature_checksum)) {
+        // this must be static as it will be accessed long after we have returned
+        static struct pad_temperature temp_return;
+        temp_return.current_temperature= this->get_temperature();
+        temp_return.target_temperature= (target_temperature == UNDEFINED) ? 0 : this->target_temperature;
+        temp_return.pwm= this->o;
+        
+        pdr->set_data_ptr(&temp_return);
+        pdr->set_taken();
+    }
+}
+
+void TemperatureControl::on_set_public_data(void* argument){
+    PublicDataRequest* pdr = static_cast<PublicDataRequest*>(argument);
+
+    if(!pdr->starts_with(temperature_control_checksum)) return;
+
+    if(!pdr->second_element_is(this->name_checksum)) return; // will be bed or hotend
+
+    // ok this is targeted at us, so set the temp
+    double t= *static_cast<double*>(pdr->get_data_ptr());
+    this->set_desired_temperature(t);
+    pdr->set_taken();
+}
 
 void TemperatureControl::set_desired_temperature(double desired_temperature)
 {

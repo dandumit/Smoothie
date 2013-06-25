@@ -95,7 +95,7 @@ void Conveyor::pop_and_process_new_block(int debug){
     // Tell all modules about it
     this->kernel->call_event(ON_BLOCK_BEGIN, this->current_block);
 
-    // In case the module was not taken
+	// In case the module was not taken
     if( this->current_block->times_taken < 1 ){
         Block* temp = this->current_block; 
         this->current_block = NULL; // It seems this was missing and adding it fixes things, if something breaks, this may be a suspect 
@@ -119,5 +119,10 @@ void Conveyor::wait_for_empty_queue(){
     while( this->queue.size() > 0){
         this->kernel->call_event(ON_IDLE);
     }
+}
+
+// Return true if the queue is empty
+bool Conveyor::is_queue_empty(){
+    return (this->queue.size() == 0);
 }
 

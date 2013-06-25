@@ -19,6 +19,8 @@
 #include "modules/utils/player/Player.h"
 #include "modules/utils/pausebutton/PauseButton.h"
 #include "modules/utils/PlayLed/PlayLed.h"
+#include "modules/utils/panel/Panel.h"
+
 // #include "libs/ChaNFSSD/SDFileSystem.h"
 #include "libs/Config.h"
 #include "libs/nuts_bolts.h"
@@ -37,6 +39,8 @@
 #include "libs/SDFAT.h"
 
 #include "libs/Watchdog.h"
+
+#include "version.h"
 
 #define second_usb_serial_enable_checksum  CHECKSUM("second_usb_serial_enable")
 
@@ -76,6 +80,8 @@ int main() {
     Kernel* kernel = new Kernel();
 
     kernel->streams->printf("Smoothie ( grbl port ) version 0.7.2 with new accel @%ldMHz\r\n", SystemCoreClock / 1000000);
+    Version version;
+    kernel->streams->printf("  Build version %s, Build date %s\r\n", version.get_build(), version.get_build_date());
 
     // Create and add main modules
     kernel->add_module( new Laser() );
@@ -89,6 +95,7 @@ int main() {
     kernel->add_module( new PlayLed() );
     kernel->add_module( new Endstops() );
     kernel->add_module( new Player() );
+    kernel->add_module( new Panel() );
     kernel->add_module( new Touchprobe() );
     kernel->add_module( new SimpleKeyboard() );
 

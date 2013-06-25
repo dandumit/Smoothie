@@ -17,7 +17,7 @@ using std::string;
 #include "Planner.h"
 #include "libs/Pin.h"
 #include "libs/StepperMotor.h"
-
+#include "RobotPublicAccess.h"
 
 #define default_seek_rate_checksum             CHECKSUM("default_seek_rate")
 #define default_feed_rate_checksum             CHECKSUM("default_feed_rate")
@@ -34,6 +34,7 @@ using std::string;
 #define rostock_checksum                       CHECKSUM("rostock")
 #define delta_checksum                         CHECKSUM("delta")
 #define hbot_checksum                          CHECKSUM("hbot")
+#define kossel_checksum                        CHECKSUM("kossel")
 
 #define NEXT_ACTION_DEFAULT 0
 #define NEXT_ACTION_DWELL 1
@@ -64,6 +65,9 @@ class Robot : public Module {
         void on_module_loaded();
         void on_config_reload(void* argument);
         void on_gcode_received(void* argument);
+        void on_get_public_data(void* argument);
+        void on_set_public_data(void* argument);
+
         void reset_axis_position(double position, int axis);
         void get_axis_position(double position[]);
         double to_millimeters(double value);

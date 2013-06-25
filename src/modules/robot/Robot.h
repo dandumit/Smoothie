@@ -17,7 +17,7 @@ using std::string;
 #include "Planner.h"
 #include "libs/Pin.h"
 #include "libs/StepperMotor.h"
-
+#include "RobotPublicAccess.h"
 
 #define default_seek_rate_checksum             CHECKSUM("default_seek_rate")
 #define default_feed_rate_checksum             CHECKSUM("default_feed_rate")
@@ -34,6 +34,7 @@ using std::string;
 #define rostock_checksum                       CHECKSUM("rostock")
 #define delta_checksum                         CHECKSUM("delta")
 #define hbot_checksum                          CHECKSUM("hbot")
+#define kossel_checksum                        CHECKSUM("kossel")
 
 #define NEXT_ACTION_DEFAULT 0
 #define NEXT_ACTION_DWELL 1
@@ -64,7 +65,16 @@ class Robot : public Module {
         void on_module_loaded();
         void on_config_reload(void* argument);
         void on_gcode_received(void* argument);
+        void on_get_public_data(void* argument);
+        void on_set_public_data(void* argument);
+
         void reset_axis_position(double position, int axis);
+        void get_axis_position(double position[]);
+        double to_millimeters(double value);
+        double from_millimeters(double value);
+
+        BaseSolution* arm_solution;                           // Selected Arm solution ( millimeters to step calculation )
+        bool absolute_mode;                                   // true for absolute mode ( default ), false for relative mode
 
     private:
         void distance_in_gcode_is_known(Gcode* gcode);
@@ -75,20 +85,17 @@ class Robot : public Module {
 
 
         void compute_arc(Gcode* gcode, double offset[], double target[]);
-        double to_millimeters(double value);
-        double from_millimeters(double value);
+
         double theta(double x, double y);
         void select_plane(uint8_t axis_0, uint8_t axis_1, uint8_t axis_2);
 
         double current_position[3];                           // Current position, in millimeters
         double last_milestone[3];                             // Last position, in millimeters
         bool inch_mode;                                       // true for inch mode, false for millimeter mode ( default )
-        bool absolute_mode;                                   // true for absolute mode ( default ), false for relative mode
         int8_t motion_mode;                                   // Motion mode for the current received Gcode
         double seek_rate;                                     // Current rate for seeking moves ( mm/s )
         double feed_rate;                                     // Current rate for feeding moves ( mm/s )
         uint8_t plane_axis_0, plane_axis_1, plane_axis_2;     // Current plane ( XY, XZ, YZ )
-        BaseSolution* arm_solution;                           // Selected Arm solution ( millimeters to step calculation )
         double mm_per_line_segment;                           // Setting : Used to split lines into segments
         double mm_per_arc_segment;                            // Setting : Used to split arcs into segmentrs
         double delta_segments_per_second;                     // Setting : Used to split lines into segments for delta based on speed
@@ -119,5 +126,16 @@ class Robot : public Module {
 
         double seconds_per_minute;                            // for realtime speed change
 };
+
+// Convert from inches to millimeters ( our internal storage unit ) if needed
+inline double Robot::to_millimeters( double value ){
+    return this->inch_mode ? value * 25.4 : value;
+}
+inline double Robot::from_millimeters( double value){
+    return this->inch_mode ? value/25.4 : value;
+}
+inline void Robot::get_axis_position(double position[]){
+    memcpy(position, this->current_position, sizeof(double)*3 );
+}
 
 #endif

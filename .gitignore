@@ -21,4 +21,8 @@ debug
 /mac_install.log
 /win_install.log
 /linux_install.log
+<<<<<<< HEAD
 /build
+=======
+
+>>>>>>> upstream/edge

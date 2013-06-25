@@ -1,0 +1,103 @@
+﻿Merge remote-tracking branch 'upstream/edge' into dioda.ro
+
+Conflicts:
+	.gitignore
+	src/main.cpp
+	src/modules/communication/GcodeDispatch.cpp
+#
+# It looks like you may be committing a merge.
+# If this is not correct, please remove the file
+#	.git/MERGE_HEAD
+# and try again.
+
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch dioda.ro
+# All conflicts fixed but you are still merging.
+#   (use "git commit" to conclude merge)
+#
+# Changes to be committed:
+#
+#	modified:   .gitignore
+#	modified:   ConfigSamples/README.TXT
+#	modified:   ConfigSamples/Smoothieboard.Rostock/config
+#	modified:   ConfigSamples/Smoothieboard/config
+#	modified:   makefile
+#	new file:   src/generate-version.sh
+#	modified:   src/libs/Event.h
+#	modified:   src/libs/Kernel.cpp
+#	modified:   src/libs/Kernel.h
+#	modified:   src/libs/Module.h
+#	new file:   src/libs/PublicData.cpp
+#	new file:   src/libs/PublicData.h
+#	new file:   src/libs/PublicDataRequest.h
+#	modified:   src/libs/USBDevice/USBMSD/USBMSD.cpp
+#	modified:   src/libs/USBDevice/USBSerial/USBSerial.cpp
+#	modified:   src/libs/utils.cpp
+#	modified:   src/libs/utils.h
+#	modified:   src/main.cpp
+#	modified:   src/makefile
+#	modified:   src/modules/communication/GcodeDispatch.cpp
+#	modified:   src/modules/communication/utils/Gcode.cpp
+#	modified:   src/modules/communication/utils/Gcode.h
+#	modified:   src/modules/robot/Conveyor.cpp
+#	modified:   src/modules/robot/Conveyor.h
+#	modified:   src/modules/robot/Robot.cpp
+#	modified:   src/modules/robot/Robot.h
+#	new file:   src/modules/robot/RobotPublicAccess.h
+#	new file:   src/modules/robot/arm_solutions/JohannKosselSolution.cpp
+#	new file:   src/modules/robot/arm_solutions/JohannKosselSolution.h
+#	modified:   src/modules/tools/endstops/Endstops.cpp
+#	modified:   src/modules/tools/laser/Laser.cpp
+#	modified:   src/modules/tools/laser/Laser.h
+#	modified:   src/modules/tools/switch/Switch.cpp
+#	modified:   src/modules/tools/switch/Switch.h
+#	modified:   src/modules/tools/switch/SwitchPool.h
+#	modified:   src/modules/tools/temperaturecontrol/TemperatureControl.cpp
+#	modified:   src/modules/tools/temperaturecontrol/TemperatureControl.h
+#	new file:   src/modules/tools/temperaturecontrol/TemperatureControlPublicAccess.h
+#	new file:   src/modules/tools/touchprobe/Touchprobe.cpp
+#	new file:   src/modules/tools/touchprobe/Touchprobe.h
+#	modified:   src/modules/utils/PlayLed/PlayLed.cpp
+#	deleted:    src/modules/utils/button/Button.cpp
+#	deleted:    src/modules/utils/button/Button.h
+#	deleted:    src/modules/utils/button/ButtonPool.h
+#	modified:   src/modules/utils/currentcontrol/CurrentControl.cpp
+#	modified:   src/modules/utils/currentcontrol/CurrentControl.h
+#	new file:   src/modules/utils/currentcontrol/DigipotBase.h
+#	new file:   src/modules/utils/currentcontrol/ad5206.h
+#	renamed:    src/libs/Digipot.h -> src/modules/utils/currentcontrol/mcp4451.h
+#	new file:   src/modules/utils/panel/Button.h
+#	new file:   src/modules/utils/panel/Panel.cpp
+#	new file:   src/modules/utils/panel/Panel.h
+#	new file:   src/modules/utils/panel/PanelScreen.cpp
+#	new file:   src/modules/utils/panel/PanelScreen.h
+#	new file:   src/modules/utils/panel/panels/I2CLCD.h
+#	new file:   src/modules/utils/panel/panels/LcdBase.cpp
+#	new file:   src/modules/utils/panel/panels/LcdBase.h
+#	new file:   src/modules/utils/panel/panels/VikiLCD.cpp
+#	new file:   src/modules/utils/panel/panels/VikiLCD.h
+#	new file:   src/modules/utils/panel/screens/ControlScreen.cpp
+#	new file:   src/modules/utils/panel/screens/ControlScreen.h
+#	new file:   src/modules/utils/panel/screens/ExtruderScreen.cpp
+#	renamed:    src/modules/utils/button/ButtonPool.cpp -> src/modules/utils/panel/screens/ExtruderScreen.h
+#	new file:   src/modules/utils/panel/screens/FileScreen.cpp
+#	new file:   src/modules/utils/panel/screens/FileScreen.h
+#	new file:   src/modules/utils/panel/screens/JogScreen.cpp
+#	new file:   src/modules/utils/panel/screens/JogScreen.h
+#	new file:   src/modules/utils/panel/screens/MainMenuScreen.cpp
+#	new file:   src/modules/utils/panel/screens/MainMenuScreen.h
+#	new file:   src/modules/utils/panel/screens/PrepareScreen.cpp
+#	new file:   src/modules/utils/panel/screens/PrepareScreen.h
+#	new file:   src/modules/utils/panel/screens/WatchScreen.cpp
+#	new file:   src/modules/utils/panel/screens/WatchScreen.h
+#	modified:   src/modules/utils/player/Player.cpp
+#	modified:   src/modules/utils/player/Player.h
+#	new file:   src/modules/utils/player/PlayerPublicAccess.h
+#	modified:   src/modules/utils/simpleshell/SimpleShell.cpp
+#	modified:   src/modules/utils/simpleshell/SimpleShell.h
+#	new file:   src/version.cpp
+#	new file:   src/version.h
+#
+
